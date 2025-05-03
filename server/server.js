@@ -32,7 +32,7 @@ app.get('/getMenu', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    console.log('gn2 /login', req.body);
+    //console.log('gn2 /login', req.body);
     //check user login
     // res.json(menu);
     
@@ -51,25 +51,8 @@ app.post('/login', async (req, res) => {
 });
 
 
-
-
-
-
-// User data
-// const user = { username: 'admin', password: 'password123' };
-
-
-// const contacts = [];
-
-// app.post("/contact", (req, res) => {
-//     const { data } = req.body;
-//     contacts.push(data);
-//     console.log("New contact received:", data);
-//     res.status(201).json({ message: "Contact saved", data });
-// });
-
 app.post('/contact', async (req, res) => {
-    console.log('gn2 /contactForm', req.body);
+    //console.log('gn2 /contactForm', req.body);
 
     if(!req.body || req.body.length < 1) {
         res.status(400).json({ message: "Error submitting contact form.  Ensure all fields are filled out"})
@@ -88,6 +71,12 @@ app.post('/contact', async (req, res) => {
                 comment: messageObj.comment,
             }
         ])
+
+        if (error) {
+            console.error('error', error);
+            return res.status(500).json({ error: error.message});
+        }
+    res.status(200).json({message: "Message Received Successfully"})
 })
 
 console.log('im listening')
