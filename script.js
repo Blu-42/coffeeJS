@@ -29,8 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
     getMenuFromServer();
 });
 
-// User data
-const user = { username: 'admin', password: 'password123' };
+
 
 const discount = { discountName: 'imOld', discountAmount: '.10' };
 
@@ -45,23 +44,6 @@ const cart = [];
 // Store logged in user
 let loggedInUser = null;
 
-// Function to handle login
-// function handleLogin(event) {
-//     event.preventDefault(); // Prevent page reload
-    
-//     const username = document.getElementById('username').value;
-//     const password = document.getElementById('password').value;
-    
-//     const user = users.find(user => user.username === username && user.password === password);
-    
-//     if (user) {
-//         loggedInUser = user;
-//         document.getElementById('welcome-message').textContent = `Welcome, ${user.username}!`;
-//         alert('Login successful');
-//     } else {
-//         alert('Invalid username or password');
-//     }
-// }
 
 function createMenu(menu){
     let ulElement = document.getElementById("menu");
@@ -83,31 +65,45 @@ function createMenu(menu){
 }
 
 
-function handleLogin2(event){
+async function handleLogin2(event){
     event.preventDefault()
     const usernameElement = document.getElementById('username');
-    console.log('usernameElement', usernameElement)
+    // console.log('usernameElement', usernameElement)
     const username = usernameElement.value
-    console.log('username', username)
+    // console.log('username', username)
     const passwordElement = document.getElementById('password');
-    console.log('passwordElement', passwordElement);
+    // console.log('passwordElement', passwordElement);
     const password = passwordElement.value;
-    console.log('password', password)
+    // console.log('password', password)
 
 
-    console.log('user.username', user.username)
+    //console.log('user.username', user.username)
 
-    if(user.username !== username || user.password !== password){
-        alert(`${username} is not found`)
-        return
-    }
-    else{
-        loggedInUser = user;
-        console.log('loggedInUser', loggedInUser)
-    }
+    const response = await fetch('http://localhost:3000/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: username,
+              password: password
+            }),
+        }
+    );
+
+    
+
+    // if(user.username !== username || user.password !== password){
+    //     alert(`${username} is not found`)
+    //     return
+    // }
+    // else{
+    //     loggedInUser = user;
+    //     console.log('loggedInUser', loggedInUser)
+    // }
 
     let welcomeMessageElement = document.getElementById('welcome-message');
-    welcomeMessageElement.innerText = `Welcome ${loggedInUser.username}`
+    welcomeMessageElement.innerText = `Welcome ${username}`
 
 }
 
@@ -322,6 +318,31 @@ function getUserLocation () {
     });
 };
 
+document.getElementById("contact-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    
+    const newContact = {
+        firstName: document.getElementById("firstName").value.trim(),
+        lastName: document.getElementById("lastName").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        message: document.getElementById("message").value.trim(),
+    };
+
+    try {
+        const response = await fetch("http://localhost:3000/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: newContact })
+    });
+
+        const result = await response.json();
+        console.log("Server response:", result);
+    } catch (error) {
+        console.error("Error submitting form:", error);
+    }
+
+    document.getElementById("contact-form").reset();
+});
 
 
 
