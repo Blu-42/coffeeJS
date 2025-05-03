@@ -13,9 +13,21 @@ app.get('/', (req, res) => {
     res.send('Hello world')
 });
 
-app.get('/getMenu', (req, res) => {
+app.get('/getMenu', async (req, res) => {
     console.log('gn2 /getMenu');
     //reach out to the db to get the menu
+    const { data: menu, error } = await supabase
+        .from('menu')
+        .select();
+
+    if (error) {
+        console.error('error', error);
+        return res.status(500).json({ error: error.message });
+    }
+
+    console.log ('menu', menu);
+    console.log ('error', error);
+
     res.json(menu);
 });
 
@@ -44,31 +56,39 @@ app.post('/login', async (req, res) => {
 
 
 // User data
-const user = { username: 'admin', password: 'password123' };
+// const user = { username: 'admin', password: 'password123' };
 
-//menu
-const menu = [
-    {
-        name: 'Americano', 
-        price: 2.5, 
-        type: 'hot',
-    },
-    {name: 'Latte', price: 3.0, type: 'hot'},
-    {name: 'Cappuccino', price: 3.5, type: 'hot'},
-    {name: 'Frozen Americano', price: 4.5, type: 'cold'},
-    {name: 'Frozen Latte', price: 2.5, type: 'cold'},
-    {name: 'Pup Cup', price: 0, type: 'cold'},
-];
 
-const contacts = [];
+// const contacts = [];
 
-app.post("/contact", (req, res) => {
-    const { data } = req.body;
-    contacts.push(data);
-    console.log("New contact received:", data);
-    res.status(201).json({ message: "Contact saved", data });
-});
+// app.post("/contact", (req, res) => {
+//     const { data } = req.body;
+//     contacts.push(data);
+//     console.log("New contact received:", data);
+//     res.status(201).json({ message: "Contact saved", data });
+// });
 
+app.post('/contact', async (req, res) => {
+    console.log('gn2 /contactForm', req.body);
+
+    if(!req.body || req.body.length < 1) {
+        res.status(400).json({ message: "Error submitting contact form.  Ensure all fields are filled out"})
+    }
+
+    const messageObj = req.body;
+    console.log ('messageObj', messageObj)
+
+    const {data, error} = await supabase
+        .from ('contact_form_messages')
+        .insert ([
+            {
+                first_name: messageObj.firstMame,
+                last_name: messageObj.lastName,
+                email: messageObj.email,
+                comment: messageObj.comment,
+            }
+        ])
+})
 
 console.log('im listening')
 app.listen(3000);
